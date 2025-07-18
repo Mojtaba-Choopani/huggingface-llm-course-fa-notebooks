@@ -24,7 +24,7 @@
 
 ### دسته‌بندی اصلی مدل‌ها:
 - **GPT-like**: خودرگرسیو (Auto-regressive)
-- **BERT-like**: خودرمزگذار (Autoencoding)
+- **BERT-like**: خودانکودر (Autoencoding)
 - **T5-like**: انکودر–دیکودر (Sequence-to-sequence)
 
 ---
@@ -56,9 +56,9 @@
 ###  راه‌حل:
 **استفاده مجدد از وزن‌های آموزش‌دیده و اشتراک‌گذاری مدل‌ها** باعث کاهش هزینه و ردپای کربنی می‌شود.
 
-### 🔧 ابزارهای تخمین اثر زیست‌محیطی:
+###  ابزارهای تخمین اثر زیست‌محیطی:
 - [ML CO2 Impact](https://mlco2.github.io/impact)
-- [CodeCarbon](https://codecarbon.io) (در Transformers 🤗)
+- [CodeCarbon](https://codecarbon.io) (در Transformers )
 
 ---
 
