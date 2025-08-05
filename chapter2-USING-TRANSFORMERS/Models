@@ -1,1 +1,508 @@
-
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Mojtaba-Choopani/huggingface-llm-course-fa-notebooks/blob/main/chapter2-USING-TRANSFORMERS/Models\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "acec2dBNUNQF"
+      },
+      "source": [
+        "# Models (PyTorch)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "40yEzZVpUNQJ"
+      },
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<b style=\"font-size: 18px;\"> ساخت ترنسفورمر</b>\n",
+        "\n",
+        "<p>\n",
+        "متد <code>from_pretrained()</code> مدل را از <b>Hugging Face Hub</b> دانلود و کش می‌کند. نام <b>چک‌پوینت</b> نشان‌دهندهٔ معماری و وزن‌های مدل است؛ مثلاً یک مدل BERT با ۱۲ لایه، اندازهٔ پنهان ۷۶۸ و ۱۲ سر توجه، که به بزرگی و کوچکی حروف حساس است.\n",
+        "</p>\n",
+        "\n",
+        "<p>\n",
+        "کلاس <code>AutoModel</code> یک <b>رَپِر خودکار</b> است که معماری مناسب مدل را از روی چک‌پوینت تشخیص داده و آن را بارگذاری می‌کند. اگر معماری موردنظر را می‌دانید، می‌توانید مستقیماً از همان کلاس استفاده کنید.\n",
+        "</p>\n",
+        "\n",
+        "</div>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from transformers import AutoModel\n",
+        "\n",
+        "model = AutoModel.from_pretrained(\"bert-base-cased\")"
+      ],
+      "metadata": {
+        "id": "1tG3EjqPVoec"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<b style=\"font-size: 18px;\"> بارگذاری و ذخیره‌سازی</b>\n",
+        "\n",
+        "<p>\n",
+        "برای ذخیره‌سازی مدل، از متد <code>save_pretrained()</code> استفاده می‌شود که <b>دو فایل</b> ذخیره می‌کند:\n",
+        "</p>\n",
+        "\n",
+        "<ul>\n",
+        "  <li><code>config.json</code> → شامل معماری و اطلاعات چک‌پوینت</li>\n",
+        "  <li><code>pytorch_model.bin</code> → شامل وزن‌های مدل (state dict)</li>\n",
+        "</ul>\n",
+        "\n",
+        "<p>\n",
+        "این دو فایل برای <b>بازسازی کامل مدل</b> کافی هستند.\n",
+        "</p>\n",
+        "\n",
+        "</div>\n",
+        "---"
+      ],
+      "metadata": {
+        "id": "svNHAvMuV8-B"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<b style=\"font-size: 18px;\">  انکودر متن</b>\n",
+        "\n",
+        "<p>\n",
+        "مدل‌های ترنسفورمر با <b>تبدیل متن به اعداد</b>، آن را پردازش می‌کنند.\n",
+        "</p>\n",
+        "\n",
+        "</div>\n"
+      ],
+      "metadata": {
+        "id": "M5SF54FZXiJh"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from transformers import AutoTokenizer\n",
+        "\n",
+        "tokenizer = AutoTokenizer.from_pretrained(\"bert-base-cased\")\n",
+        "\n",
+        "encoded_input = tokenizer(\"Hello, I'm a single sentence!\")\n",
+        "print(encoded_input)"
+      ],
+      "metadata": {
+        "id": "fQMhN_LzXu6N",
+        "outputId": "79f5b051-7773-4fef-8355-4f5263ed6ece",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'input_ids': [101, 8667, 117, 146, 112, 182, 170, 1423, 5650, 106, 102], 'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'attention_mask': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<p>\n",
+        "ما یک <b>دیکشنری</b> با فیلدهای زیر دریافت می‌کنیم:\n",
+        "</p>\n",
+        "\n",
+        "<ul>\n",
+        "  <li><code>input_ids</code>: نمایش عددی توکن‌های شما</li>\n",
+        "  <li><code>token_type_ids</code>: به مدل می‌گوید کدام بخش از ورودی جمله A و کدام بخش جمله B است (در بخش بعدی بیشتر توضیح داده می‌شود)</li>\n",
+        "  <li><code>attention_mask</code>: مشخص می‌کند کدام توکن‌ها باید مورد توجه قرار گیرند و کدام نه </li>\n",
+        "</ul>\n",
+        "</div>\n"
+      ],
+      "metadata": {
+        "id": "SFV7eJ_TYF7q"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<b style=\"font-size: 18px;\"> پدینگ ورودی‌ها</b>\n",
+        "\n",
+        "<p>\n",
+        "اگر از توکنایزر بخواهیم که ورودی‌ها را <b>پدگذاری</b> کند، آن تمام جملات را با اضافه کردن یک <b>توکن ویژهٔ پد (padding token)</b> به انتهای جملات کوتاه‌تر، به یک طول یکسان می‌رساند.\n",
+        "</p>\n",
+        "\n",
+        "</div>\n"
+      ],
+      "metadata": {
+        "id": "nnMFxdA5ZMDR"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "encoded_input = tokenizer(\n",
+        "    [\"How are you?\", \"I'm fine, thank you!\"], padding=True, return_tensors=\"pt\"\n",
+        ")\n",
+        "print(encoded_input)"
+      ],
+      "metadata": {
+        "id": "BrYiumKXZRrH",
+        "outputId": "2ff630ac-48c0-4af1-e867-8d82901585da",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'input_ids': tensor([[ 101, 1731, 1132, 1128,  136,  102,    0,    0,    0,    0],\n",
+            "        [ 101,  146,  112,  182, 2503,  117, 6243, 1128,  106,  102]]), 'token_type_ids': tensor([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n",
+            "        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), 'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 0, 0, 0, 0],\n",
+            "        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<b style=\"font-size: 18px;\"> کوتاه‌سازی (Truncating) ورودی‌ها</b>\n",
+        "\n",
+        "<p>\n",
+        "اگر طول ورودی از حد مجاز مدل (مثلاً <b>۵۱۲ توکن</b> در BERT) بیشتر باشد، باید با پارامتر <code>truncation</code> آن را کوتاه کنیم تا مدل بتواند آن را پردازش کند.\n",
+        "</p>\n",
+        "\n",
+        "</div>\n"
+      ],
+      "metadata": {
+        "id": "utai13TJbjNn"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "encoded_input = tokenizer(\n",
+        "    \"This is a very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very long sentence.\",\n",
+        "    truncation=True,\n",
+        ")\n",
+        "print(encoded_input[\"input_ids\"])"
+      ],
+      "metadata": {
+        "id": "q1TKdq8vbpRa",
+        "outputId": "c4f5c1b4-b943-4856-aef8-1ba780f31ebb",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[101, 1188, 1110, 170, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1304, 1263, 5650, 119, 102]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<p>\n",
+        "با <b>ترکیب دو پارامتر</b> <code>padding</code> و <code>truncation</code>، می‌توانید مطمئن شوید که <b>تنسورهای شما دقیقاً به اندازهٔ مورد نیازتان</b> هستند.\n",
+        "</p>\n",
+        "\n",
+        "</div>\n"
+      ],
+      "metadata": {
+        "id": "GxjbZI04b6Ah"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "encoded_input = tokenizer(\n",
+        "    [\"How are you?\", \"I'm fine, thank you!\"],\n",
+        "    padding=True,\n",
+        "    truncation=True,\n",
+        "    max_length=5,\n",
+        "    return_tensors=\"pt\",\n",
+        ")\n",
+        "print(encoded_input)"
+      ],
+      "metadata": {
+        "id": "3w5PNXcTb-im",
+        "outputId": "2f884b50-8a28-4630-f4ef-e314f28b95ec",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'input_ids': tensor([[ 101, 1731, 1132, 1128,  102],\n",
+            "        [ 101,  146,  112,  182,  102]]), 'token_type_ids': tensor([[0, 0, 0, 0, 0],\n",
+            "        [0, 0, 0, 0, 0]]), 'attention_mask': tensor([[1, 1, 1, 1, 1],\n",
+            "        [1, 1, 1, 1, 1]])}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "<div dir=\"rtl\">\n",
+        "\n",
+        "<b style=\"font-size: 18px;\">🔖 افزودن توکن‌های ویژه</b>\n",
+        "\n",
+        "<p>\n",
+        "توکن‌های ویژه مانند <code>[CLS]</code> و <code>[SEP]</code> برای <b>مشخص کردن مرز جمله</b> و <b>جدا کردن جملات</b> در مدل‌هایی مثل <b>BERT</b> ضروری هستند.\n",
+        "</p>\n",
+        "\n",
+        "</div>\n"
+      ],
+      "metadata": {
+        "id": "XwnvNivpcVWB"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "encoded_input = tokenizer(\"How are you?\")\n",
+        "print(encoded_input[\"input_ids\"])\n",
+        "tokenizer.decode(encoded_input[\"input_ids\"])"
+      ],
+      "metadata": {
+        "id": "8xcS_5emcYZv",
+        "outputId": "094625b0-d877-4a4f-84da-e896d6816be3",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 52
+        }
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[101, 1731, 1132, 1128, 136, 102]\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'[CLS] How are you? [SEP]'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 7
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "f4B2gh-1UNQK"
+      },
+      "outputs": [],
+      "source": [
+        "!pip install datasets evaluate transformers[sentencepiece]"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "_JSkHNyXUNQL"
+      },
+      "outputs": [],
+      "source": [
+        "from transformers import BertConfig, BertModel\n",
+        "\n",
+        "# Building the config\n",
+        "config = BertConfig()\n",
+        "\n",
+        "# Building the model from the config\n",
+        "model = BertModel(config)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "dcjtiiPzUNQN",
+        "outputId": "7f6308d1-d393-4154-853d-bace892c7b22"
+      },
+      "outputs": [
+        {
+          "data": {
+            "text/plain": [
+              "BertConfig {\n",
+              "  [...]\n",
+              "  \"hidden_size\": 768,\n",
+              "  \"intermediate_size\": 3072,\n",
+              "  \"max_position_embeddings\": 512,\n",
+              "  \"num_attention_heads\": 12,\n",
+              "  \"num_hidden_layers\": 12,\n",
+              "  [...]\n",
+              "}"
+            ]
+          },
+          "execution_count": null,
+          "metadata": {},
+          "output_type": "execute_result"
+        }
+      ],
+      "source": [
+        "print(config)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "HjETgO_mUNQO"
+      },
+      "outputs": [],
+      "source": [
+        "from transformers import BertConfig, BertModel\n",
+        "\n",
+        "config = BertConfig()\n",
+        "model = BertModel(config)\n",
+        "\n",
+        "# Model is randomly initialized!"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "r1J__8SFUNQP"
+      },
+      "outputs": [],
+      "source": [
+        "from transformers import BertModel\n",
+        "\n",
+        "model = BertModel.from_pretrained(\"bert-base-cased\")"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "h36BIB2nUNQS"
+      },
+      "outputs": [],
+      "source": [
+        "model.save_pretrained(\"directory_on_my_computer\")"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "wvfiXMJnUNQT"
+      },
+      "outputs": [],
+      "source": [
+        "sequences = [\"Hello!\", \"Cool.\", \"Nice!\"]"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "HaVJnKAjUNQU"
+      },
+      "outputs": [],
+      "source": [
+        "encoded_sequences = [\n",
+        "    [101, 7592, 999, 102],\n",
+        "    [101, 4658, 1012, 102],\n",
+        "    [101, 3835, 999, 102],\n",
+        "]"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "V_0pbjoIUNQV"
+      },
+      "outputs": [],
+      "source": [
+        "import torch\n",
+        "\n",
+        "model_inputs = torch.tensor(encoded_sequences)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "Dw3dW3WJUNQV"
+      },
+      "outputs": [],
+      "source": [
+        "output = model(model_inputs)"
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "name": "Models (PyTorch)",
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
