@@ -76,3 +76,58 @@ Let, ’s, do, token, ization, !
 - تقریباً بدون تولید توکن‌های ناشناخته
 - بسیار مناسب برای زبان‌های پیوندی (agglutinative) مثل ترکی استانبولی، که کلمات طولانی از ترکیب زیرکلمات ساخته می‌شوند.
 
+### بارگذاری و ذخیره‌سازی توکنایزرها
+
+بارگذاری و ذخیره‌سازی توکنایزرها همان‌قدر ساده است که برای مدل‌ها انجام می‌شود  
+و دقیقاً از همان دو متد استفاده می‌شود: `from_pretrained()` و `save_pretrained()`.
+
+این متدها:
+
+- الگوریتم توکن‌سازی (مشابه معماری مدل)
+- و واژگان آن (مشابه وزن‌های مدل)
+
+را بارگذاری یا ذخیره می‌کنند.
+
+---
+
+**بارگذاری توکنایزر BERT:**
+
+```python
+from transformers import BertTokenizer
+
+tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
+```
+
+
+مانند `AutoModel`، می‌توان از `AutoTokenizer` نیز استفاده کرد  
+تا توکنایزر مناسب را بر اساس نام چک‌پوینت انتخاب کند:
+
+```python
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+```
+
+
+**استفاده از توکنایزر:**
+
+```python
+tokenizer("Using a Transformer network is simple")
+```
+
+**خروجی:**
+
+```python
+{
+  'input_ids': [101, 7993, 170, 11303, 1200, 2443, 1110, 3014, 102],
+  'token_type_ids': [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  'attention_mask': [1, 1, 1, 1, 1, 1, 1, 1, 1]
+}
+```
+
+
+**ذخیره‌سازی توکنایزر:**
+
+```python
+tokenizer.save_pretrained("directory_on_my_computer")
+```
